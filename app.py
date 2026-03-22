@@ -45,8 +45,8 @@ time.sleep(1.0)  # ← give 1 second for disk/FS to catch up
         # Copy your bash script into the temp folder
         script_path = os.path.join(tmp_dir, SCRIPT_NAME)
         if not os.path.exists(SCRIPT_NAME):
-            st.error(f"Script '{SCRIPT_NAME}' not found in repo!")
-            st.stop()
+        st.error(f"Script '{SCRIPT_NAME}' not found in repo!")
+        st.stop()
         shutil.copy(SCRIPT_NAME, script_path)
 
         # Make script executable (usually not needed on cloud, but safe)
