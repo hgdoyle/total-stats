@@ -5,56 +5,68 @@ import os
 import shutil
 import time
 
-st.title("CSV Batch Processor")
-st.write("Upload your CSV files → run script → download result")
+st.title("CSV Batch Processor (Allstate Stats)")
+st.write("Upload your week-*.csv files + names.txt → run script → download results")
 
 # ────────────────────────────────────────────────
-#          CHANGE THESE IF NEEDED
-SCRIPT_NAME = "allstat"                    # exact filename as in GitHub (no .sh unless it has one)
-OUTPUT_FILE = "Total.csv" # relative path to the file you want to download
-# If you prefer total.csv instead → change to: "all-totalstats/total.csv"
+SCRIPT_NAME = "allstat"                     # your script filename
+OUTPUT_FILE  = "All-TotalStats/Allstate.csv"  # main result file to offer for download
+# You can also offer Total.csv later if needed
 # ────────────────────────────────────────────────
 
-uploaded_files = st.file_uploader(
-    "Choose your CSV files",
-    type="csv",
-    accept_multiple_files=True
-)
+col1, col2 = st.columns(2)
 
-if st.button("Run Script") and uploaded_files:
+with col1:
+    csv_files = st.file_uploader(
+        "Upload your CSV files (week-1.csv, week-2.csv, ...)",
+        type="csv",
+        accept_multiple_files=True,
+        key="csv_uploader"
+    )
+
+with col2:
+    names_file = st.file_uploader(
+        "Upload names.txt (one name per line, e.g. John Doe)",
+        type="txt",
+        accept_multiple_files=False,
+        key="names_uploader"
+    )
+
+if st.button("Run Script") and csv_files and names_file:
     with tempfile.TemporaryDirectory() as tmp_dir:
-        # Save uploaded CSVs to temp folder with explicit sync
-        for uploaded_file in uploaded_files:
-            file_path = os.path.join(tmp_dir, uploaded_file.name)
-            with open(file_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-                f.flush()           # Ensure data is written from buffer
-                os.fsync(f.fileno()) # Force OS to write to disk
+        # 1. Save all CSV files
+        for uploaded in csv_files:
+            path = os.path.join(tmp_dir, uploaded.name)
+            with open(path, "wb") as f:
+                f.write(uploaded.getbuffer())
+                f.flush()
+                os.fsync(f.fileno())
 
-        # Give the filesystem a moment to catch up (critical on some cloud envs)
-        time.sleep(5.0)
+        # 2. Save names.txt — force the name to be exactly "names.txt"
+        names_path = os.path.join(tmp_dir, "names.txt")
+        with open(names_path, "wb") as f:
+            f.write(names_file.getbuffer())
+            f.flush()
+            os.fsync(f.fileno())
 
-        # Copy your bash script into the temp folder
+        time.sleep(1.0)  # filesystem settle time
+
+        # Debug: show what's in the folder
+        st.write("Files saved in temporary directory:")
+        for fname in sorted(os.listdir(tmp_dir)):
+            size = os.path.getsize(os.path.join(tmp_dir, fname))
+            st.write(f"• {fname}  ({size:,} bytes)")
+
+        # Copy the bash script
         script_path = os.path.join(tmp_dir, SCRIPT_NAME)
         if not os.path.exists(SCRIPT_NAME):
-            st.error(f"Script '{SCRIPT_NAME}' not found in repo!")
+            st.error(f"Script '{SCRIPT_NAME}' not found in repo")
             st.stop()
 
         shutil.copy(SCRIPT_NAME, script_path)
-        os.chmod(script_path, 0o755)  # Make executable
+        os.chmod(script_path, 0o755)
 
-        # ─────────────── Debug: Show what's actually on disk ───────────────
-        st.write("Files present in temp dir just before running script:")
-        files_in_dir = os.listdir(tmp_dir)
-        if files_in_dir:
-            for fname in files_in_dir:
-                fpath = os.path.join(tmp_dir, fname)
-                size = os.path.getsize(fpath)
-                st.write(f"• {fname}  (size: {size:,} bytes)")
-        else:
-            st.warning("No files found in temp directory!")
-
-        # Run the bash script
+        # Run the script
         try:
             result = subprocess.run(
                 ["bash", SCRIPT_NAME],
@@ -64,36 +76,44 @@ if st.button("Run Script") and uploaded_files:
                 check=True
             )
 
-            st.success("Script ran successfully!")
+            st.success("Script completed successfully")
 
-            # Look for the output file inside the subfolder the script creates
+            if result.stdout:
+                with st.expander("Script output (stdout)"):
+                    st.code(result.stdout.strip())
+
+            # Offer download of the main result file
             output_path = os.path.join(tmp_dir, OUTPUT_FILE)
-
             if os.path.exists(output_path):
                 with open(output_path, "rb") as f:
-                    file_bytes = f.read()
-
-                # Extract just the filename for the download button
-                download_name = os.path.basename(output_path)
-
-                st.download_button(
-                    label=f"📥 Download {download_name}",
-                    data=file_bytes,
-                    file_name=download_name,
-                    mime="text/csv"
-                )
+                    st.download_button(
+                        label="📥 Download Allstate.csv",
+                        data=f,
+                        file_name="Allstate.csv",
+                        mime="text/csv",
+                        key="dl_allstate"
+                    )
             else:
-                st.error(f"Output file not found: {OUTPUT_FILE}")
-                st.info("Script ran but didn't create the expected file. Check script logic or debug output above.")
+                st.error(f"Expected output not found: {OUTPUT_FILE}")
+
+            # Optional: also offer Total.csv
+            total_path = os.path.join(tmp_dir, "All-TotalStats/Total.csv")
+            if os.path.exists(total_path):
+                with open(total_path, "rb") as f:
+                    st.download_button(
+                        label="📥 Download Total.csv",
+                        data=f,
+                        file_name="Total.csv",
+                        mime="text/csv",
+                        key="dl_total"
+                    )
 
         except subprocess.CalledProcessError as e:
-            st.error("Script failed — error output below")
-            if e.stderr:
-                st.code(e.stderr.strip())
+            st.error("Script failed")
             if e.stdout:
-                st.code(e.stdout.strip())
+                st.code(e.stdout.strip(), language="bash")
+            if e.stderr:
+                st.code(e.stderr.strip(), language="bash")
 
-        # Optional: show any console output from the script
-        if result.stdout:
-            with st.expander("Script console output (stdout)"):
-                st.code(result.stdout)
+elif st.button("Run Script"):
+    st.warning("Please upload both CSV files and names.txt")
