@@ -10,7 +10,7 @@ st.write("Upload your CSV files → run script → download result")
 # ────────────────────────────────────────────────
 #          CHANGE THESE TWO LINES ONLY
 SCRIPT_NAME = "allstat"          # ← your bash script's exact name (e.g. myscript.sh)
-OUTPUT_NAME = "TotalStats.csv" # ← exact name of the file your script creates
+OUTPUT_NAME = "All-TotalStats/Total.csv" # ← exact name of the file your script creates
 # ────────────────────────────────────────────────
 
 uploaded_files = st.file_uploader(
