@@ -11,7 +11,7 @@ while IFS= read -r name; do # Read each name from the file
 
     rm "$first-$last.txt" # Removes any file with the same name
 
-    for file in *[0-9].csv; do
+    for file in *.csv; do
         
         echo "$file" >> "$first-$last.txt"
         
