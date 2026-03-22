@@ -27,9 +27,7 @@ with col1:
 with col2:
     names_file = st.file_uploader(
         "Upload file named names.txt. This file should contain every players name in the following format:
-        John Smith
-        Billy Brown
-        Harrison Ford",
+        John Smith /n Billy Brown \n Harrison Ford",
         type="txt",
         accept_multiple_files=False,
         key="names_uploader"
