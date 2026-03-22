@@ -37,7 +37,7 @@ with col2:
         key="names_uploader"
     )
 
-if st.button("Run Script") and csv_files and names_file:
+if st.button("Run Script", key="main-run-button") and csv_files and names_file:
     with tempfile.TemporaryDirectory() as tmp_dir:
         # 1. Save all CSV files
         for uploaded in csv_files:
