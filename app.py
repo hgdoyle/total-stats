@@ -10,7 +10,7 @@ st.write("Upload your week-*.csv files + names.txt → run script → download r
 
 # ────────────────────────────────────────────────
 SCRIPT_NAME = "allstat"                     # your script filename
-OUTPUT_FILE  = "All-TotalStats/Allstate.csv"  # main result file to offer for download
+OUTPUT_FILE  = "Total.csv"  # main result file to offer for download
 # You can also offer Total.csv later if needed
 # ────────────────────────────────────────────────
 
