@@ -32,7 +32,7 @@ if st.button("Run Script") and uploaded_files:
                 os.fsync(f.fileno()) # Force OS to write to disk
 
         # Give the filesystem a moment to catch up (critical on some cloud envs)
-        time.sleep(1.0)
+        time.sleep(5.0)
 
         # Copy your bash script into the temp folder
         script_path = os.path.join(tmp_dir, SCRIPT_NAME)
