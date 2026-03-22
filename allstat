@@ -45,9 +45,3 @@ done < names.txt  # Assuming your file is named 'names.txt'
 
 sort -t, -k+5 -n -r AllStat.csv > Total.csv
 
-mkdir All-TotalStats
-
-mv AllStat.csv All-TotalStats
-
-mv Total.csv All-TotalStats
-
