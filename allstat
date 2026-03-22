@@ -1,0 +1,53 @@
+#!/bin/bash
+
+rm -rf All-TotalStats
+
+echo "Name, Total Thrown, Total Caught, Total Defense, Total Stat points" > AllStat.csv
+
+while IFS= read -r name; do # Read each name from the file
+    
+    first=$(echo "$name" | cut -d' ' -f1)
+    last=$(echo "$name" | cut -d' ' -f2)
+
+    rm "$first-$last.txt" # Removes any file with the same name
+
+    for file in *[0-9].csv; do
+        
+        echo "$file" >> "$first-$last.txt"
+        
+        cut -d"," -f 1-4 "$file" | grep "$first $last" | sed 's/,,/,0,/g' | sed 's/,/ /g' >> "$first-$last.txt"
+        
+        echo "" >> "$first-$last.txt"
+    
+    done 
+
+    awk '{ sumT += $3 } END { print "Total Thrown: " sumT }' "$first-$last.txt" >> "$first-$last.txt"
+    awk '{ sumC += $4 } END { print "Total Caught: " sumC }' "$first-$last.txt" >> "$first-$last.txt"
+    awk '{ sumD += $5 } END { print "Total Defense: " sumD }' "$first-$last.txt" >> "$first-$last.txt"
+
+    sumT=$(tail -n 3 "$first-$last.txt" | head -n 1 | awk '{ print $3 }')
+    sumC=$(tail -n 2 "$first-$last.txt" | head -n 1 | awk '{ print $3 }')
+    sumD=$(tail -n 1 "$first-$last.txt" | awk '{ print $3 }')
+
+    echo "Total stats: $((sumT * 2 + sumC * 2 + sumD))" >> "$first-$last.txt"
+	
+	echo "$first-$last.txt, $sumT, $sumC, $sumD, $((sumT * 2 + sumC * 2 + sumD))" >> AllStat.csv
+	
+	sed -i 's/.txt//g' AllStat.csv
+	
+	sed -i 's/Total Thrown: //g' AllStat.csv
+	sed -i 's/Total Caught: //g' AllStat.csv
+	sed -i 's/Total Defense: //g' AllStat.csv
+	sed -i 's/Total stats: //g' AllStat.csv
+	sed -i 's/-/ /g' AllStat.csv
+	
+done < names.txt  # Assuming your file is named 'names.txt'
+
+sort -t, -k+5 -n -r AllStat.csv > Total.csv
+
+mkdir All-TotalStats
+
+mv AllStat.csv All-TotalStats
+
+mv Total.csv All-TotalStats
+
