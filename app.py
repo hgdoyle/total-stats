@@ -29,7 +29,9 @@ with col2:
         """Upload file named names.txt. This file should contain every players name in the following format:
         \n John Smith
         \n Billy Brown
-        \n Harrison Ford""",
+        \n Harrison Ford
+        \n etc
+        \n Each name should be seperated by one space and every name needs to be spelled identically to the ones on the stat sheets.""",
         type="txt",
         accept_multiple_files=False,
         key="names_uploader"
