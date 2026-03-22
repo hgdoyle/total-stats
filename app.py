@@ -5,8 +5,8 @@ import os
 import shutil
 import time
 
-st.title("CSV Batch Processor (Allstate Stats)")
-st.write("Upload your week-*.csv files + names.txt → run script → download results")
+st.title("Marauder's Ultimate Frisbee League Total Stat Generator")
+st.write("")
 
 # ────────────────────────────────────────────────
 SCRIPT_NAME = "allstat"                     # your script filename
@@ -18,7 +18,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     csv_files = st.file_uploader(
-        "Upload your CSV files (week-1.csv, week-2.csv, ...)",
+        "Upload your CSV files (Download each sheet from the regular season stats spreadsheet as a .csv file and upload them here.",
         type="csv",
         accept_multiple_files=True,
         key="csv_uploader"
@@ -26,7 +26,10 @@ with col1:
 
 with col2:
     names_file = st.file_uploader(
-        "Upload names.txt (one name per line, e.g. John Doe)",
+        "Upload file named names.txt. This file should contain every players name in the following format:
+        John Smith
+        Billy Brown
+        Harrison Ford",
         type="txt",
         accept_multiple_files=False,
         key="names_uploader"
