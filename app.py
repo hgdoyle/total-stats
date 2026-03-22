@@ -40,7 +40,7 @@ time.sleep(1.0)  # ← give 1 second for disk/FS to catch up
         for uploaded_file in uploaded_files:
             file_path = os.path.join(tmp_dir, uploaded_file.name)
             with open(file_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
+            f.write(uploaded_file.getbuffer())
 
         # Copy your bash script into the temp folder
         script_path = os.path.join(tmp_dir, SCRIPT_NAME)
