@@ -21,6 +21,21 @@ uploaded_files = st.file_uploader(
 
 if st.button("Run Script") and uploaded_files:
     with tempfile.TemporaryDirectory() as tmp_dir:
+
+        import time
+
+# ... (your for uploaded_file loop here)
+
+# Force flush & give OS time to settle
+for uploaded_file in uploaded_files:
+    file_path = os.path.join(tmp_dir, uploaded_file.name)
+    with open(file_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+        f.flush()          # ← added
+        os.fsync(f.fileno())  # ← added, strongest sync
+
+time.sleep(1.0)  # ← give 1 second for disk/FS to catch up
+        
         # Save uploaded CSVs to temp folder
         for uploaded_file in uploaded_files:
             file_path = os.path.join(tmp_dir, uploaded_file.name)
