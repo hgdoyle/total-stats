@@ -23,7 +23,7 @@ with col1:
         \n
         \n
         \n
-        \n """,
+        \n .""",
         type="csv",
         accept_multiple_files=True,
         key="csv_uploader"
