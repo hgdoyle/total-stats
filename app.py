@@ -5,34 +5,6 @@ import os
 import shutil
 import time
 
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-# Path to your image (relative to app.py)
-image_path = "MUFL.jpg"          # or "images/ultimate_bg.png"
-
-bin_str = get_base64_of_bin_file(image_path)
-
-page_bg_img = f"""
-<style>
-[data-testid="stAppViewContainer"] {{
-    background-image: url("data:image/jpeg;base64,{bin_str}");  /* change jpeg to png if needed */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}}
-
-[data-testid="stHeader"] {{
-    background: rgba(0,0,0,0);
-}}
-</style>
-"""
-
-st.markdown(page_bg_img, unsafe_allow_html=True)
-
 st.title("Marauder's Ultimate Frisbee League Total Stat Generator")
 st.write("")
 
