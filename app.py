@@ -19,10 +19,10 @@ col1, col2 = st.columns(2)
 with col1:
     csv_files = st.file_uploader(
         """Upload your CSV files (Download each sheet from the regular season stats spreadsheet as a .csv file and upload them here.
-        \n
-        \n
-        \n
-        \n
+        \n 
+        \n 
+        \n 
+        \n 
         \n .""",
         type="csv",
         accept_multiple_files=True,
